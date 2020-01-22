@@ -2,7 +2,6 @@
   import { isLoggedIn } from "../stores.js";
   const toggleLogIn = () => {
     $isLoggedIn = !$isLoggedIn;
-    console.log($isLoggedIn);
   }
 </script>
 
