@@ -1,9 +1,9 @@
 <script>
-  import Header from "./Header.svelte";
-  import Feed from "./Feed.svelte";
-  import Dashboard from "./Dashboard.svelte";
-  import Footer from "./Footer.svelte";
-  import { isLoggedIn } from "../stores.js";
+  import Header from "./components/Header.svelte";
+  import Feed from "./components/Feed.svelte";
+  import Dashboard from "./components/Dashboard.svelte";
+  import Footer from "./components/Footer.svelte";
+  import { isLoggedIn } from "./stores.js";
 </script>
 
 <main>
