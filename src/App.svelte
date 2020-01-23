@@ -8,7 +8,7 @@
 
 <main>
   <Header />
-  {#if $isLoggedIn === true}
+  {#if $isLoggedIn === false}
     <Dashboard />
   {:else}
     <Feed />

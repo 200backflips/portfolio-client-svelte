@@ -4,6 +4,8 @@
 
   const shortParagraph =
     "Dragée cake dessert sesame snaps tootsie roll gummies cupcake marshmallow cupcake. Sesame snaps sweet cotton candy marshmallow tiramisu.";
+
+  import { bigHighlight, smallHighlights, otherImages } from "../stores.js";
 </script>
 
 <style>
