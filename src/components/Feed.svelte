@@ -1,11 +1,14 @@
 <script>
-  const longParagraph =
-    "Dragée cake dessert sesame snaps tootsie roll gummies cupcake marshmallow cupcake. Sesame snaps sweet cotton candy marshmallow tiramisu. Muffin marzipan halvah candy canes wafer biscuit marzipan candy. Apple pie pudding lollipop jelly-o tiramisu pie tootsie roll.";
+  import { onMount } from "svelte";
+  import { imageList } from "../stores.js";
 
-  const shortParagraph =
-    "Dragée cake dessert sesame snaps tootsie roll gummies cupcake marshmallow cupcake. Sesame snaps sweet cotton candy marshmallow tiramisu.";
+  const baseURL = "http://127.0.0.1:8080";
 
-  import { bigHighlight, smallHighlights, otherImages } from "../stores.js";
+  onMount(async () => {
+    const res = await fetch(`${baseURL}/images`)
+      .catch(err => console.error(err.message));
+    $imageList = await res.json();
+  });
 </script>
 
 <style>
@@ -95,37 +98,29 @@
 </style>
 
 <div class="Feed">
-  <div class="big-highlight">
-    <img src="images/arsbasta01.png" alt="highlight1" />
-    <p class="big-highlight-text">{longParagraph}</p>
-  </div>
+  {#each $imageList as { placement, path, caption }}
+    {#if placement === 'bigHighlight'}
+      <div class="big-highlight">
+        <img src={path} alt="big-highlight" />
+        <p class="big-highlight-text">{caption}</p>
+      </div>
+    {/if}
+  {/each}
   <div class="small-container">
-    <div class="small-highlight">
-      <img src="images/arsbasta06.png" alt="highlight2" />
-      <p class="small-highlight-text">{shortParagraph}</p>
-    </div>
-    <div class="small-highlight">
-      <img src="images/arsbasta08.png" alt="highlight3" />
-      <p class="small-highlight-text">{shortParagraph}</p>
-    </div>
-    <div class="small-highlight">
-      <img src="images/arsbasta09.png" alt="highlight4" />
-      <p class="small-highlight-text">{shortParagraph}</p>
-    </div>
-    <div class="small-highlight">
-      <img src="images/arsbasta10.png" alt="highlight5" />
-      <p class="small-highlight-text">{shortParagraph}</p>
-    </div>
+    {#each $imageList as { placement, path, caption }}
+      {#if placement === 'smallHighlight'}
+        <div class="small-highlight">
+          <img src={path} alt="small-highlight" />
+          <p class="small-highlight-text">{caption}</p>
+        </div>
+      {/if}
+    {/each}
   </div>
   <div class="other-imgs">
-    <img src="images/arsbasta03.gif" alt="pic01" />
-    <img src="images/arsbasta16.png" alt="pic02" />
-    <img src="images/arsbasta18.gif" alt="pic03" />
-    <img src="images/arsbasta18.gif" alt="pic03" />
-    <img src="images/arsbasta03.gif" alt="pic01" />
-    <img src="images/arsbasta16.png" alt="pic02" />
-    <img src="images/arsbasta16.png" alt="pic02" />
-    <img src="images/arsbasta18.gif" alt="pic03" />
-    <img src="images/arsbasta03.gif" alt="pic01" />
+    {#each $imageList as { placement, path }}
+      {#if placement === 'otherImages'}
+        <img src={path} alt="other-images" />
+      {/if}
+    {/each}
   </div>
 </div>

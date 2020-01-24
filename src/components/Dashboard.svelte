@@ -1,10 +1,12 @@
 <script>
   import {
-    imgList,
+    imageList,
     bigHighlight,
     smallHighlights,
     otherImages
   } from "../stores.js";
+
+  const regex = /\w+\.[a-z]+/i;
 
   const setBigHighlight = e => {
     if (e.target.id === "image") {
@@ -14,10 +16,13 @@
   };
 
   const setSmallHighlights = e => {
-    if (e.target.id === "img") {
-      return ($bigHighlight.image = e.target.value);
-    }
-    return ($bigHighlight.caption = e.target.value);
+    $smallHighlights.map((element, i) => {
+      if (e.target.id == `image${element.id}`) {
+        $smallHighlights[i].image = e.target.value;
+      } else if (e.target.id == `caption${element.id}`) {
+        $smallHighlights[i].caption = e.target.value;
+      }
+    });
   };
 
   const addOtherImages = e => {
@@ -95,8 +100,6 @@
 
 <div class="Dashboard">
   <h2>admin dashboard</h2>
-  <button on:click={() => console.log($bigHighlight)}>LOG</button>
-  <button on:click={() => console.log($otherImages)}>looog</button>
   <form class="admin-form">
     <div class="input-field">
       <label>stor highlight</label>
@@ -110,41 +113,57 @@
     </div>
     <div class="input-field">
       <label>liten highlight 1</label>
-      <input type="list" list="img-list" />
+      <input
+        type="list"
+        list="img-list"
+        id="image0"
+        on:change={setSmallHighlights} />
       <label>bildtext</label>
-      <textarea />
+      <textarea id="caption0" on:change={setSmallHighlights} />
     </div>
     <div class="input-field">
       <label>liten highlight 2</label>
-      <input type="list" list="img-list" />
+      <input
+        type="list"
+        list="img-list"
+        id="image1"
+        on:change={setSmallHighlights} />
       <label>bildtext</label>
-      <textarea />
+      <textarea id="caption1" on:change={setSmallHighlights} />
     </div>
     <div class="input-field">
       <label>liten highlight 3</label>
-      <input type="list" list="img-list" />
+      <input
+        type="list"
+        list="img-list"
+        id="image2"
+        on:change={setSmallHighlights} />
       <label>bildtext</label>
-      <textarea />
+      <textarea id="caption2" on:change={setSmallHighlights} />
     </div>
     <div class="input-field">
       <label>liten highlight 4</label>
-      <input type="list" list="img-list" />
+      <input
+        type="list"
+        list="img-list"
+        id="image3"
+        on:change={setSmallHighlights} />
       <label>bildtext</label>
-      <textarea />
+      <textarea id="caption3" on:change={setSmallHighlights} />
     </div>
     <div class="input-field">
       <label>övriga bilder</label>
       <div class="other-imgs">
-        {#each $imgList as img}
-          <input type="checkbox" id={img} on:click={addOtherImages} />
-          <label>{img}</label>
+        {#each $imageList as { path }}
+          <input type="checkbox" id={path.match(regex)} on:click={addOtherImages} />
+          <label>{path.match(regex)}</label>
         {/each}
       </div>
     </div>
   </form>
   <datalist id="img-list">
-    {#each $imgList as img}
-      <option value={img} />
+    {#each $imageList as { path }}
+      <option value={path.match(regex)} />
     {/each}
   </datalist>
 </div>
