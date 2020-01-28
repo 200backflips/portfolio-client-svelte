@@ -1,26 +1,57 @@
 <script>
   import {
+    path,
     imageList,
-    bigHighlight,
-    smallHighlights,
-    otherImages
+    otherImages,
+    dataList
   } from "../stores.js";
+  import { onMount } from "svelte";
 
-  const regex = /\w+\.[a-z]+/i;
+  onMount(async () => {
+    const res = await fetch(`${$path}/uploads`).catch(err =>
+      console.error(err.message)
+    );
+    $dataList = await res.json();
+  });
+
+  const patchRequest = (id, body) => {
+    fetch(`${path}images/${id}`, {
+      method: "PATCH",
+      body: JSON.stringify(body),
+      headers: {
+        "Content-type": "application/json; charset=UTF-8"
+      }
+    });
+  };
 
   const setBigHighlight = e => {
-    if (e.target.id === "image") {
-      return ($bigHighlight.image = e.target.value);
-    }
-    return ($bigHighlight.caption = e.target.value);
+    let value = e.target.value;
+    $imageList.map(img => {
+      if (img.placement === "bigHighlight") {
+        if (e.target.id === "image") {
+          return patchRequest(img._id, {
+            path: `${$path}uploads/${value}`
+          });
+        }
+        return patchRequest(img._id, { caption: value });
+      }
+    });
   };
 
   const setSmallHighlights = e => {
-    $smallHighlights.map((element, i) => {
-      if (e.target.id == `image${element.id}`) {
-        $smallHighlights[i].image = e.target.value;
-      } else if (e.target.id == `caption${element.id}`) {
-        $smallHighlights[i].caption = e.target.value;
+    let id = e.target.id;
+    let value = e.target.value;
+    $imageList.map(img => {
+      if (
+        img.placement === "smallHighlight" &&
+        img.placementOrder === parseInt(id.match(/\d/))
+      ) {
+        if (id.startsWith("image")) {
+          return patchRequest(img._id, {
+            path: `${$path}uploads/${value}`
+          });
+        }
+        return patchRequest(img._id, { caption: value });
       }
     });
   };
@@ -154,16 +185,16 @@
     <div class="input-field">
       <label>övriga bilder</label>
       <div class="other-imgs">
-        {#each $imageList as { path }}
-          <input type="checkbox" id={path.match(regex)} on:click={addOtherImages} />
-          <label>{path.match(regex)}</label>
+        {#each $dataList as img}
+          <input type="checkbox" id={img} on:click={addOtherImages} />
+          <label>{img}</label>
         {/each}
       </div>
     </div>
   </form>
   <datalist id="img-list">
-    {#each $imageList as { path }}
-      <option value={path.match(regex)} />
+    {#each $dataList as img}
+      <option value={img} />
     {/each}
   </datalist>
 </div>

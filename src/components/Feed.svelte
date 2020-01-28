@@ -1,11 +1,10 @@
 <script>
   import { onMount } from "svelte";
-  import { imageList } from "../stores.js";
+  import { imageList, path } from "../stores.js";
 
-  const baseURL = "http://127.0.0.1:8080";
 
   onMount(async () => {
-    const res = await fetch(`${baseURL}/images`)
+    const res = await fetch(`${$path}/images`)
       .catch(err => console.error(err.message));
     $imageList = await res.json();
   });
