@@ -3,7 +3,8 @@
     path,
     imageList,
     otherImages,
-    dataList
+    dataList,
+    uploadList
   } from "../stores.js";
   import { onMount } from "svelte";
 
@@ -15,7 +16,7 @@
   });
 
   const patchRequest = (id, body) => {
-    fetch(`${path}images/${id}`, {
+    fetch(`${$path}/images/${id}`, {
       method: "PATCH",
       body: JSON.stringify(body),
       headers: {
@@ -30,7 +31,7 @@
       if (img.placement === "bigHighlight") {
         if (e.target.id === "image") {
           return patchRequest(img._id, {
-            path: `${$path}uploads/${value}`
+            path: `${$path}/uploads/${value}`
           });
         }
         return patchRequest(img._id, { caption: value });
@@ -48,7 +49,7 @@
       ) {
         if (id.startsWith("image")) {
           return patchRequest(img._id, {
-            path: `${$path}uploads/${value}`
+            path: `${$path}/uploads/${value}`
           });
         }
         return patchRequest(img._id, { caption: value });
@@ -61,6 +62,16 @@
       return $otherImages.push(e.target.id);
     }
     return $otherImages.splice($otherImages.indexOf(e.target.id), 1);
+  };
+
+  const handleUpload = e => {
+    // console.log($uploadList[0]);
+    fetch(`${$path}/uploads/`, {
+      method: "POST",
+      body: $uploadList[0]
+    })
+      .then(res => res.json())
+      .then(data => console.log(data));
   };
 </script>
 
@@ -131,6 +142,11 @@
 
 <div class="Dashboard">
   <h2>admin dashboard</h2>
+  <datalist id="img-list">
+    {#each $dataList as img}
+      <option value={img} />
+    {/each}
+  </datalist>
   <form class="admin-form">
     <div class="input-field">
       <label>stor highlight</label>
@@ -192,9 +208,11 @@
       </div>
     </div>
   </form>
-  <datalist id="img-list">
-    {#each $dataList as img}
-      <option value={img} />
-    {/each}
-  </datalist>
+  <form>
+    <input type="file" name="file" bind:files={$uploadList} id="file" />
+    <input
+      type="submit"
+      value="ladda upp"
+      on:click|preventDefault={handleUpload} />
+  </form>
 </div>

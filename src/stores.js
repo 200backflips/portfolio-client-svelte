@@ -9,3 +9,5 @@ export const imageList = writable([]);
 export const dataList = writable([]);
 
 export const otherImages = writable([]);
+
+export const uploadList = writable([]);
