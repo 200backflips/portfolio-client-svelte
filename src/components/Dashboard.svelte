@@ -31,7 +31,7 @@
       if (img.placement === "bigHighlight") {
         if (e.target.id === "image") {
           return patchRequest(img._id, {
-            path: `${$path}/uploads/${value}`
+            path: `${$path}/uploads/display/${value}`
           });
         }
         return patchRequest(img._id, { caption: value });
@@ -49,7 +49,7 @@
       ) {
         if (id.startsWith("image")) {
           return patchRequest(img._id, {
-            path: `${$path}/uploads/${value}`
+            path: `${$path}/uploads/display/${value}`
           });
         }
         return patchRequest(img._id, { caption: value });
@@ -65,10 +65,10 @@
   };
 
   const handleUpload = e => {
-    // console.log($uploadList[0]);
+    console.log($uploadList[0]);
     fetch(`${$path}/uploads/`, {
       method: "POST",
-      body: $uploadList[0]
+      body: JSON.stringify({ file: $uploadList[0] })
     })
       .then(res => res.json())
       .then(data => console.log(data));
@@ -125,7 +125,7 @@
   }
 
   .other-imgs {
-    max-height: 15rem;
+    max-height: 25rem;
     margin-bottom: 1rem;
     display: grid;
     justify-items: start;
@@ -138,13 +138,17 @@
   .other-imgs input[type="checkbox"] {
     margin: 0.3rem auto;
   }
+  .other-imgs img {
+    width: 10rem;
+    padding-bottom: 1.5rem;
+  }
 </style>
 
 <div class="Dashboard">
   <h2>admin dashboard</h2>
   <datalist id="img-list">
-    {#each $dataList as img}
-      <option value={img} />
+    {#each $dataList as { filename }}
+      <option value={filename} />
     {/each}
   </datalist>
   <form class="admin-form">
@@ -201,9 +205,11 @@
     <div class="input-field">
       <label>övriga bilder</label>
       <div class="other-imgs">
-        {#each $dataList as img}
-          <input type="checkbox" id={img} on:click={addOtherImages} />
-          <label>{img}</label>
+        {#each $dataList as { filename }}
+          <input type="checkbox" id={filename} on:click={addOtherImages} />
+          <img
+            src={`${$path}/uploads/display/${filename}`}
+            alt="portfolio-items" />
         {/each}
       </div>
     </div>
