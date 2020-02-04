@@ -1,10 +1,10 @@
 <script>
   import { onMount } from "svelte";
-  import { imageList, path } from "../stores.js";
+  import { imageList, uri } from "../stores.js";
 
 
   onMount(async () => {
-    const res = await fetch(`${$path}/images`)
+    const res = await fetch(`${$uri}/images`)
       .catch(err => console.error(err.message));
     $imageList = await res.json();
   });

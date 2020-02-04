@@ -1,22 +1,28 @@
 <script>
-  import {
-    path,
-    imageList,
-    otherImages,
-    dataList,
-    uploadList
-  } from "../stores.js";
+  import { uri, imageList, dataList, uploadList } from "../stores.js";
   import { onMount } from "svelte";
 
   onMount(async () => {
-    const res = await fetch(`${$path}/uploads`).catch(err =>
+    const res = await fetch(`${$uri}/uploads`).catch(err =>
       console.error(err.message)
     );
     $dataList = await res.json();
+    $imageList.map(img => {
+      $dataList.map((data, i) => {
+        if (
+          img.placement === "otherImages" &&
+          data.filename === img.path.match(regex)[0]
+        ) {
+          $dataList[i].selected = true;
+        }
+      });
+    });
   });
 
+  const regex = /[\w]+\.\w{2,4}/i;
+
   const patchRequest = (id, body) => {
-    fetch(`${$path}/images/${id}`, {
+    fetch(`${$uri}/images/${id}`, {
       method: "PATCH",
       body: JSON.stringify(body),
       headers: {
@@ -31,7 +37,7 @@
       if (img.placement === "bigHighlight") {
         if (e.target.id === "image") {
           return patchRequest(img._id, {
-            path: `${$path}/uploads/display/${value}`
+            path: `${$uri}/uploads/display/${value}`
           });
         }
         return patchRequest(img._id, { caption: value });
@@ -49,7 +55,7 @@
       ) {
         if (id.startsWith("image")) {
           return patchRequest(img._id, {
-            path: `${$path}/uploads/display/${value}`
+            path: `${$uri}/uploads/display/${value}`
           });
         }
         return patchRequest(img._id, { caption: value });
@@ -57,18 +63,19 @@
     });
   };
 
-  const addOtherImages = e => {
-    if (e.target.checked === true) {
-      return $otherImages.push(e.target.id);
-    }
-    return $otherImages.splice($otherImages.indexOf(e.target.id), 1);
-  };
+  // const addOtherImages = e => {
+  //   if (e.target.checked === true) {
+  //     return $otherImages.push(e.target.id);
+  //   }
+  //   return $otherImages.splice($otherImages.indexOf(e.target.id), 1);
+  // };
 
   const handleUpload = e => {
-    console.log($uploadList[0]);
-    fetch(`${$path}/uploads/`, {
+    const uploadFile = new FormData();
+    uploadFile.append('file', $uploadList[0])
+    fetch(`${$uri}/uploads/`, {
       method: "POST",
-      body: JSON.stringify({ file: $uploadList[0] })
+      body: uploadFile
     })
       .then(res => res.json())
       .then(data => console.log(data));
@@ -89,15 +96,19 @@
     margin: 2rem;
   }
 
-  .admin-form {
+  .set-highlights {
     display: grid;
-    justify-items: center;
-    grid-template-columns: repeat(3, 250px);
+    grid-template-columns: repeat(3, 270px);
     column-gap: 60px;
     font-size: 0.8rem;
   }
+
+  .admin-form {
+    background: #ffffff;
+  }
   .admin-form label {
     padding: 0.2rem;
+    font-size: 0.8rem;
   }
   .admin-form input[type="list"] {
     width: 250px;
@@ -117,30 +128,37 @@
   }
 
   .input-field {
-    margin-bottom: 2rem;
-    width: 270px;
+    margin-bottom: 1rem;
     padding: 0.5rem;
     background: #ffff;
-    box-shadow: 2px 3px 7px #dadada;
+    box-shadow: 2px 3px 7px rgba(0, 0, 0, 0.2);
   }
 
   .other-imgs {
-    max-height: 25rem;
-    margin-bottom: 1rem;
-    display: grid;
-    justify-items: start;
-    align-items: start;
-    grid-template-columns: 10% 90%;
-    grid-template: rows 100%;
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    width: 900px;
+    margin: 0 auto;
     border: 2px solid rgba(0, 0, 0, 0.1);
     overflow: auto;
   }
-  .other-imgs input[type="checkbox"] {
-    margin: 0.3rem auto;
-  }
   .other-imgs img {
-    width: 10rem;
-    padding-bottom: 1.5rem;
+    align-self: flex-start;
+    width: 8rem;
+    padding: 1rem;
+  }
+  .other-imgs img:hover {
+    filter: grayscale(0%);
+    opacity: 1;
+  }
+  .unselected-img {
+    filter: grayscale(100%);
+    opacity: 0.7;
+  }
+  .selected-img {
+    filter: grayscale(0%);
+    opacity: 1;
   }
 </style>
 
@@ -152,73 +170,77 @@
     {/each}
   </datalist>
   <form class="admin-form">
-    <div class="input-field">
-      <label>stor highlight</label>
-      <input
-        type="list"
-        list="img-list"
-        id="image"
-        on:change={setBigHighlight} />
-      <label>bildtext</label>
-      <textarea id="caption" on:change={setBigHighlight} />
-    </div>
-    <div class="input-field">
-      <label>liten highlight 1</label>
-      <input
-        type="list"
-        list="img-list"
-        id="image0"
-        on:change={setSmallHighlights} />
-      <label>bildtext</label>
-      <textarea id="caption0" on:change={setSmallHighlights} />
-    </div>
-    <div class="input-field">
-      <label>liten highlight 2</label>
-      <input
-        type="list"
-        list="img-list"
-        id="image1"
-        on:change={setSmallHighlights} />
-      <label>bildtext</label>
-      <textarea id="caption1" on:change={setSmallHighlights} />
-    </div>
-    <div class="input-field">
-      <label>liten highlight 3</label>
-      <input
-        type="list"
-        list="img-list"
-        id="image2"
-        on:change={setSmallHighlights} />
-      <label>bildtext</label>
-      <textarea id="caption2" on:change={setSmallHighlights} />
-    </div>
-    <div class="input-field">
-      <label>liten highlight 4</label>
-      <input
-        type="list"
-        list="img-list"
-        id="image3"
-        on:change={setSmallHighlights} />
-      <label>bildtext</label>
-      <textarea id="caption3" on:change={setSmallHighlights} />
+    <div class="set-highlights">
+      <div class="input-field">
+        <label>stor highlight</label>
+        <input
+          type="list"
+          list="img-list"
+          id="image"
+          on:change={setBigHighlight} />
+        <label>bildtext</label>
+        <textarea id="caption" on:change={setBigHighlight} />
+      </div>
+      <div class="input-field">
+        <label>liten highlight 1</label>
+        <input
+          type="list"
+          list="img-list"
+          id="image0"
+          on:change={setSmallHighlights} />
+        <label>bildtext</label>
+        <textarea id="caption0" on:change={setSmallHighlights} />
+      </div>
+      <div class="input-field">
+        <label>liten highlight 2</label>
+        <input
+          type="list"
+          list="img-list"
+          id="image1"
+          on:change={setSmallHighlights} />
+        <label>bildtext</label>
+        <textarea id="caption1" on:change={setSmallHighlights} />
+      </div>
+      <div class="input-field">
+        <label>liten highlight 3</label>
+        <input
+          type="list"
+          list="img-list"
+          id="image2"
+          on:change={setSmallHighlights} />
+        <label>bildtext</label>
+        <textarea id="caption2" on:change={setSmallHighlights} />
+      </div>
+      <div class="input-field">
+        <label>liten highlight 4</label>
+        <input
+          type="list"
+          list="img-list"
+          id="image3"
+          on:change={setSmallHighlights} />
+        <label>bildtext</label>
+        <textarea id="caption3" on:change={setSmallHighlights} />
+      </div>
+      <div class="input-field">
+        <label>ladda upp filer</label>
+        <input type="file" name="file" bind:files={$uploadList} id="file" />
+        <input
+          type="submit"
+          value="ladda upp"
+          on:click|preventDefault={handleUpload} />
+      </div>
     </div>
     <div class="input-field">
       <label>övriga bilder</label>
       <div class="other-imgs">
-        {#each $dataList as { filename }}
-          <input type="checkbox" id={filename} on:click={addOtherImages} />
+        {#each $dataList as { filename, selected }}
           <img
-            src={`${$path}/uploads/display/${filename}`}
-            alt="portfolio-items" />
+            src={`${$uri}/uploads/display/${filename}`}
+            alt="portfolio-items"
+            id={filename}
+            class={selected ? 'selected-img' : 'unselected-img'} />
         {/each}
       </div>
     </div>
-  </form>
-  <form>
-    <input type="file" name="file" bind:files={$uploadList} id="file" />
-    <input
-      type="submit"
-      value="ladda upp"
-      on:click|preventDefault={handleUpload} />
   </form>
 </div>
