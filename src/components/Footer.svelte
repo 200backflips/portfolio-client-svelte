@@ -1,12 +1,9 @@
-<script>
-
-</script>
-
 <style>
   .Footer {
     display: flex;
     justify-content: space-evenly;
     width: 20vw;
+    height: 10vh;
     margin: 0 auto;
     padding: 1rem;
   }

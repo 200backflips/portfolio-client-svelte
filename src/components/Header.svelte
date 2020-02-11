@@ -10,7 +10,7 @@
     display: flex;
     justify-content: flex-end;
     margin: 0 auto;
-    padding: 2rem;
+    height: 10vh;
   }
 
   .Header button {

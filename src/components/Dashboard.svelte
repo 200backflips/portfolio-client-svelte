@@ -11,7 +11,7 @@
       $dataList.map((data, i) => {
         if (
           img.placement === "otherImages" &&
-          data.filename === img.path.match(regex)[0]
+          data.filename === parsePath(img.path)
         ) {
           $dataList[i].selected = true;
         }
@@ -19,7 +19,7 @@
     });
   });
 
-  const regex = /[\w]+\.\w{2,4}/i;
+  const parsePath = string => string.match(/[\w]+\.\w{2,4}/i)[0];
 
   const patchRequest = (id, body) => {
     fetch(`${$uri}/images/${id}`, {
@@ -63,22 +63,26 @@
     });
   };
 
-  // const addOtherImages = e => {
-  //   if (e.target.checked === true) {
-  //     return $otherImages.push(e.target.id);
-  //   }
-  //   return $otherImages.splice($otherImages.indexOf(e.target.id), 1);
-  // };
+  const toggleOtherImages = e => {
+    const filename = e.target.id;
+    $imageList.map(img => {
+        if (filename === parsePath(img.path) && img.placement === 'otherImages') {
+          return console.log('m3tte');
+        }
+    });
+    // return $otherImages.splice($otherImages.indexOf(e.target.id), 1);
+  };
 
   const handleUpload = e => {
     const uploadFile = new FormData();
-    uploadFile.append('file', $uploadList[0])
+    uploadFile.append("file", $uploadList[0]);
     fetch(`${$uri}/uploads/`, {
       method: "POST",
       body: uploadFile
     })
       .then(res => res.json())
-      .then(data => console.log(data));
+      .then(data => console.log(data))
+      .catch(err => console.error(err.message));
   };
 </script>
 
@@ -238,7 +242,8 @@
             src={`${$uri}/uploads/display/${filename}`}
             alt="portfolio-items"
             id={filename}
-            class={selected ? 'selected-img' : 'unselected-img'} />
+            class={selected ? 'selected-img' : 'unselected-img'}
+            on:click={toggleOtherImages} />
         {/each}
       </div>
     </div>
