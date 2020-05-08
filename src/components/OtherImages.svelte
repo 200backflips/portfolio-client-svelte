@@ -5,22 +5,20 @@
 <style>
   .other-imgs {
     display: grid;
-    grid-template-columns: repeat(3, 364px);
-    grid-template-rows: repeat(1, 364px);
+    grid-template-columns: repeat(3, calc(100vw / 3.75));
+    grid-template-rows: repeat(2, calc(100vw / 3.75));
   }
-  .other-imgs img {
+  .other-imgs > img {
     object-fit: cover;
     width: 100%;
-    padding: 0.1rem;
+    padding: 0.3%;
     transition: ease-in-out 0.2s;
   }
-  .other-imgs img:hover {
-    opacity: 0.6;
-  }
-  @media screen and (max-width: 400px) {
+
+  @media screen and (max-width: 800px) {
     .other-imgs {
-      grid-template-columns: repeat(3, 100px);
-      grid-template-rows: repeat(1, 100px);
+      grid-template-columns: repeat(2, calc(100vw / 2.5));
+      grid-template-rows: repeat(3, calc(100vw / 2.5));
     }
   }
 </style>

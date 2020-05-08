@@ -10,26 +10,17 @@
   .big-highlight > img {
     object-fit: cover;
     width: 100%;
-    padding: 0.1rem;
-  }
-  .big-highlight:hover {
-    opacity: 0.6;
+    padding: 0.2%;
   }
   .big-highlight-text {
     display: none;
     position: absolute;
-    width: 400px;
-    margin: 0 auto;
-    left: 12%;
+    width: 80%;
+    left: 6%;
     top: 18%;
     color: #ffffff;
+    font-size: calc(100vw / 55);
     text-shadow: 2px 2px 3px #000000;
-    font-size: 1.4rem;
-  }
-  .big-highlight:hover > .big-highlight-text {
-    display: block;
-    z-index: 2;
-    opacity: 1;
   }
 </style>
 
